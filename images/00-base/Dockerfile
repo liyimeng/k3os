@@ -36,6 +36,7 @@ RUN apk -U add \
     tar \
     util-linux \
     vim \
+    zfs \
     xz
 RUN if [ "$ARCH" == "amd64" ]; then \
         apk add open-vm-tools grub-bios \

@@ -6,8 +6,8 @@ RUN apt-get update -y && \
     apt-get install -y kmod initramfs-tools curl rsync xz-utils
 
 ARG ARCH
-ENV KVERSION=4.15.0-47-generic
-ENV URL=https://github.com/rancher/k3os-kernel/releases/download/4.15.0-47.50-rancher2
+ENV KVERSION=4.15.0-52-generic
+ENV URL="https://github.com/liyimeng/k3os-kernel/releases/download/zfs+gpu"
 ENV KERNEL_XZ=${URL}/kernel-generic_${ARCH}.tar.xz
 ENV KERNEL_EXTRA_XZ=${URL}/kernel-extra-generic_${ARCH}.tar.xz
 ENV KERNEL_HEADERS_XZ=${URL}/kernel-headers-generic_${ARCH}.tar.xz
