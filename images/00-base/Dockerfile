@@ -1,7 +1,7 @@
 ### BASE ###
-FROM alpine:3.9 as base
+FROM alpine:3.14 as base
 ARG ARCH
-RUN apk -U add \
+RUN apk --no-cache add \
     bash \
     bash-completion \
     blkid \
@@ -10,19 +10,40 @@ RUN apk -U add \
     connman \
     conntrack-tools \
     coreutils \
+    cryptsetup \
     curl \
     dbus \
+    dmidecode \
     dosfstools \
     e2fsprogs \
     e2fsprogs-extra \
+    efibootmgr \
+    eudev \
     findutils \
+    gcompat \
     grub-efi \
     haveged \
+    htop \
+    hvtools \
     iproute2 \
     iptables \
+    irqbalance \
+    iscsi-scst \
     jq \
     kbd-bkeymaps \
+    lm-sensors \
+    libc6-compat \
+    libusb \
     logrotate \
+    lsscsi \
+    lvm2 \
+    lvm2-extra \
+    mdadm \
+    mdadm-misc \
+    mdadm-udev \
+    multipath-tools \
+    ncurses \
+    ncurses-terminfo \
     nfs-utils \
     open-iscsi \
     openrc \
@@ -30,19 +51,24 @@ RUN apk -U add \
     openssh-server \
     parted \
     procps \
+    qemu-guest-agent \
+    rng-tools \
     rsync \
     strace \
+    smartmontools \
     sudo \
     tar \
+    tzdata \
     util-linux \
     vim \
     zfs \
-    xz
-RUN if [ "$ARCH" == "amd64" ]; then \
-        apk add open-vm-tools grub-bios \
-    ;fi
-RUN cp /etc/apk/repositories /etc/apk/repositories.orig && \
-    echo 'http://dl-3.alpinelinux.org/alpine/edge/testing' >> /etc/apk/repositories && \
-    apk -U add efibootmgr && \
-    mv /etc/apk/repositories.orig /etc/apk/repositories && \
-    apk update
+    wireguard-tools \
+    wpa_supplicant \
+    xfsprogs \
+    xz \
+ && mv -vf /etc/conf.d/qemu-guest-agent /etc/conf.d/qemu-guest-agent.orig \
+ && mv -vf /etc/conf.d/rngd             /etc/conf.d/rngd.orig \
+ && mv -vf /etc/conf.d/udev-settle      /etc/conf.d/udev-settle.orig \
+# replicate the default "no idea, friend" behavior of virt-what
+ && touch /usr/sbin/virt-what \
+ && chmod +x /usr/sbin/virt-what

@@ -4,10 +4,12 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 	"os"
 	"path"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/rancher/k3os/pkg/config"
 	"github.com/rancher/k3os/pkg/util"
@@ -49,7 +51,13 @@ func SetAuthorizedKeys(cfg *config.CloudConfig, withNet bool) error {
 }
 
 func getKey(key string, withNet bool) (string, error) {
-	if !strings.HasPrefix(key, "github:") {
+	providers := map[string]string{
+		"github": "https://github.com/%s.keys",
+		"gitlab": "https://gitlab.com/%s.keys",
+	}
+
+	url, err := url.Parse(key)
+	if err != nil || url.Scheme == "" {
 		return key, nil
 	}
 
@@ -57,14 +65,28 @@ func getKey(key string, withNet bool) (string, error) {
 		return "", nil
 	}
 
-	resp, err := http.Get(fmt.Sprintf("https://github.com/%s.keys", strings.TrimPrefix(key, "github:")))
+	if providerURL, ok := providers[url.Scheme]; ok {
+		key = fmt.Sprintf(providerURL, url.Opaque)
+	}
+
+	var resp *http.Response
+	for i := 0; i < 10; time.Sleep(time.Second) {
+		// network interface(s) can be up before DNS is ready, so let's try up to 10 times
+		resp, err = http.Get(key)
+		if err == nil || strings.Contains(err.Error(), "unsupported protocol scheme") {
+			break
+		}
+		i++
+	}
 	if err != nil {
 		return "", err
 	}
 	if resp.Body != nil {
 		defer resp.Body.Close()
 	}
-
+	if resp.StatusCode/100 > 2 {
+		return "", fmt.Errorf("%s %s", resp.Proto, resp.Status)
+	}
 	bytes, err := ioutil.ReadAll(resp.Body)
 	return string(bytes), err
 }
