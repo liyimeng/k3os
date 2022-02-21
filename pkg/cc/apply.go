@@ -26,15 +26,22 @@ func runApplies(cfg *config.CloudConfig, appliers ...applier) error {
 
 func RunApply(cfg *config.CloudConfig) error {
 	return runApplies(cfg,
+		ApplyModules,
+		ApplySysctls,
+		ApplyHostname,
+		ApplyDNS,
+		ApplyWifi,
+		ApplyPassword,
 		ApplySSHKeysWithNet,
 		ApplyWriteFiles,
+		ApplyEnvironment,
 		ApplyRuncmd,
 		ApplyInstall,
 		ApplyK3SInstall,
 	)
 }
 
-func ConfigApply(cfg *config.CloudConfig) error {
+func InstallApply(cfg *config.CloudConfig) error {
 	return runApplies(cfg,
 		ApplyK3SWithRestart,
 	)
@@ -52,6 +59,7 @@ func BootApply(cfg *config.CloudConfig) error {
 		ApplySSHKeys,
 		ApplyK3SNoRestart,
 		ApplyWriteFiles,
+		ApplyEnvironment,
 		ApplyBootcmd,
 	)
 }
@@ -62,6 +70,7 @@ func InitApply(cfg *config.CloudConfig) error {
 		ApplySysctls,
 		ApplyHostname,
 		ApplyWriteFiles,
+		ApplyEnvironment,
 		ApplyInitcmd,
 	)
 }
